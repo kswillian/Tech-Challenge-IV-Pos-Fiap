@@ -1,0 +1,4 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://fiaplus:fiaplusMongo2023!@clusterwebflux.xztehur.mongodb.net/fiaplusDB?retryWrites=true&w=majority

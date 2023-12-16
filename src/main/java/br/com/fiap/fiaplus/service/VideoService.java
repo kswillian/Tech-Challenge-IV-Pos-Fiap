@@ -1,53 +1,42 @@
 package br.com.fiap.fiaplus.service;
 
 import br.com.fiap.fiaplus.document.Video;
+import br.com.fiap.fiaplus.repository.VideoRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class VideoService {
-
-    // TODO Implementar injeção do repository, implementar crud basico e remover o mock
-    private Video mockVideo;
-
-    public VideoService() {
-        mockVideo = Video.builder()
-                .id(UUID.randomUUID())
-                .title("title mock")
-                .description("description mock")
-                .url("url mock")
-                .dateRegister(LocalDateTime.now())
-                .build();
-    }
+    private final VideoRepository videoRepository;
 
     public Mono<Video> create(Video video){
         log.info("[VideoService] - create");
-        return Mono.just(mockVideo);
+        return videoRepository.save(video);
     }
 
     public Flux<Video> listAll(){
         log.info("[VideoService] - listAll");
-        return Flux.just(mockVideo);
+        return videoRepository.findAll();
     }
 
     public Mono<Video> listById(String id){
         log.info("[VideoService] - listById");
-        return Mono.just(mockVideo);
+        return videoRepository.findById(id);
     }
 
     public Mono<Video> update(Video video){
         log.info("[VideoService] - update");
-        return Mono.just(mockVideo);
+        return videoRepository.save(video);
     }
 
     public void deleteById(String id){
         log.info("[VideoService] - deleteById");
+        videoRepository.findEndRemove(id);
     }
 
     // TODO pensar na implementacao
