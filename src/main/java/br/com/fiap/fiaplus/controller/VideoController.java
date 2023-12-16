@@ -1,4 +1,4 @@
-package br.com.fiap.fiaplus.repository;
+package br.com.fiap.fiaplus.controller;
 
 import br.com.fiap.fiaplus.document.Video;
 import br.com.fiap.fiaplus.service.VideoService;
