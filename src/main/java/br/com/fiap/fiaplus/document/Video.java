@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @Document
-public class Video { // TODO: adicionar a anotação @Document
+public class Video {
 
     @Id
     private String id;
