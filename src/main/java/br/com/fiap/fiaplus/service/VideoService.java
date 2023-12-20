@@ -1,7 +1,11 @@
 package br.com.fiap.fiaplus.service;
 
 import br.com.fiap.fiaplus.document.Video;
+import br.com.fiap.fiaplus.exception.ObjectNotFoundException;
+import br.com.fiap.fiaplus.mapper.VideoMapper;
+import br.com.fiap.fiaplus.model.VideoRequest;
 import br.com.fiap.fiaplus.repository.VideoRepository;
+import com.mongodb.client.result.DeleteResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,10 +16,13 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 public class VideoService {
-    private final VideoRepository videoRepository;
 
-    public Mono<Video> create(Video video){
+    private final VideoRepository videoRepository;
+    private final VideoMapper videoMapper;
+
+    public Mono<Video> create(final VideoRequest videoRequest){
         log.info("[VideoService] - create");
+        var video = videoMapper.toEntity(videoRequest);
         return videoRepository.save(video);
     }
 
@@ -24,19 +31,21 @@ public class VideoService {
         return videoRepository.findAll();
     }
 
-    public Mono<Video> listById(String id){
+    public Mono<Video> listById(final String id){
         log.info("[VideoService] - listById");
-        return videoRepository.findById(id);
+        return handleNotFound(videoRepository.findById(id), id);
     }
 
-    public Mono<Video> update(Video video){
+    public Mono<Video> update(final String id, final VideoRequest videoRequest){
         log.info("[VideoService] - update");
-        return videoRepository.save(video);
+        return listById(id)
+                .map(video -> videoMapper.toEntity(videoRequest, video))
+                .flatMap(videoRepository::update);
     }
 
-    public void deleteById(String id){
+    public Mono<DeleteResult> deleteById(final String id){
         log.info("[VideoService] - deleteById");
-        videoRepository.findEndRemove(id);
+        return handleNotFound(videoRepository.findEndRemove(id), id);
     }
 
     // TODO pensar na implementacao
@@ -47,6 +56,16 @@ public class VideoService {
     // TODO pensar na implementacao
     public Flux<Video> streaming(String id){
         return Flux.just(Video.builder().build());
+    }
+
+    private <T> Mono<T> handleNotFound(Mono<T> mono, String id){
+
+        var message = String.format(
+                "Object not found. Id: %s, Type: %s", id, Video.class);
+
+        return mono.switchIfEmpty(Mono.error(
+                new ObjectNotFoundException(message)
+        ));
     }
 
 }
