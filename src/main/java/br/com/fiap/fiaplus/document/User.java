@@ -1,25 +1,28 @@
 package br.com.fiap.fiaplus.document;
 
-import br.com.fiap.fiaplus.document.enums.Category;
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 
-@Data
 @With
+@Data
+@Builder
 @Document
-@NoArgsConstructor
 @AllArgsConstructor
-public class Video {
+@NoArgsConstructor
+public class User {
 
     @Id
     private String id;
-    private String title;
-    private String description;
-    private Category category;
-    private String url;
+    private String name;
+
+    @Indexed(unique = true)
+    private String email;
+    private Collection<Video> favorites;
     private LocalDateTime dateRegister;
 
 }
