@@ -1,9 +1,9 @@
 package br.com.fiap.fiaplus.controller;
 
-import br.com.fiap.fiaplus.document.Video;
-import br.com.fiap.fiaplus.model.VideoCriteria;
-import br.com.fiap.fiaplus.model.VideoRequest;
-import br.com.fiap.fiaplus.service.VideoServiceImpl;
+import br.com.fiap.fiaplus.document.User;
+import br.com.fiap.fiaplus.model.UserCriteria;
+import br.com.fiap.fiaplus.model.UserRequest;
+import br.com.fiap.fiaplus.service.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,50 +20,50 @@ import static org.springframework.http.HttpStatus.OK;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/videos")
-public class VideoController {
+@RequestMapping("/v1/users")
+public class UserController {
 
-    private final VideoServiceImpl videoService;
+    private final UserServiceImpl userService;
 
     @PostMapping
-    public ResponseEntity<Mono<Video>> create(@RequestBody @Valid VideoRequest request){
-        log.info("[VideoController] - create");
+    public ResponseEntity<Mono<User>> create(@RequestBody @Valid UserRequest request){
+        log.info("[UserController] - create");
         return ResponseEntity.status(CREATED)
-                .body(videoService.create(request));
+                .body(userService.create(request));
     }
 
     @GetMapping
-    public ResponseEntity<Mono<PageImpl<Video>>> listAll(
+    public ResponseEntity<Mono<PageImpl<User>>> listAll(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "DESC") String direction, VideoCriteria videoCriteria){
+            @RequestParam(defaultValue = "DESC") String direction, UserCriteria userCriteria){
 
-        log.info("[VideoController] - listAll");
+        log.info("[UserController] - listAll");
 
         var pageRequest = PageRequest.of(page, size, Sort.Direction.fromString(direction), "dateRegister");
 
         return ResponseEntity.status(OK)
-                .body(videoService.listAll(pageRequest, videoCriteria));
+                .body(userService.listAll(pageRequest, userCriteria));
 
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Mono<Video>> listById(@PathVariable String id){
-        log.info("[VideoController] - listById");
+    public ResponseEntity<Mono<User>> listById(@PathVariable String id){
+        log.info("[UserController] - listById");
         return ResponseEntity.status(OK)
-                .body(videoService.listById(id));
+                .body(userService.listById(id));
     }
 
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<Mono<Video>> updateById(@PathVariable String id, @RequestBody @Valid VideoRequest request){
-        log.info("[VideoController] - updateById");
+    public ResponseEntity<Mono<User>> updateById(@PathVariable String id, @RequestBody @Valid UserRequest request){
+        log.info("[UserController] - updateById");
         return ResponseEntity.status(OK)
-                .body(videoService.update(id, request));
+                .body(userService.update(id, request));
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable String id){
-        log.info("[VideoController] - listById");
-        videoService.deleteById(id);
+        log.info("[UserController] - listById");
+        userService.deleteById(id);
         return ResponseEntity.status(OK).build();
     }
 
