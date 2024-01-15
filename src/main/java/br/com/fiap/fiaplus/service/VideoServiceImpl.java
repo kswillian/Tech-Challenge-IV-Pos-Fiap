@@ -103,22 +103,4 @@ public class VideoServiceImpl implements GenericService<Video, VideoRequest> {
     }
 
 
-    public Mono<Video> createVideo(VideoRequest request) {
-        log.info("[VideoService] - create");
-        var video = videoMapper.toEntity(request);
-        video.setDateRegister(LocalDateTime.now());
-        return videoRepository.save(video);
-    }
-
-    public Mono<String> upload2(FilePart video){
-
-        String fileName = video.filename();
-        String filePath = "src/main/resources/videos/" + fileName;
-
-
-            video.transferTo(new File(filePath));
-            return Mono.just(filePath);
-
-    }
-
 }
