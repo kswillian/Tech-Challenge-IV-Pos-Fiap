@@ -15,7 +15,6 @@ public record VideoRequest (
         String description,
 
         @Size(min = 3, max = 150, message = "must be between 3 and 150 characters")
-        @NotBlank(message = "must not be null or empty")
         String url,
 
         Category category

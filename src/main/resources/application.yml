@@ -3,3 +3,9 @@ spring:
     mongodb:
       uri: mongodb+srv://fiaplus:fiaplusMongo2023!@clusterwebflux.xztehur.mongodb.net/fiaplusDB?retryWrites=true&w=majority
       auto-index-creation: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB
+      max-request-size: 215MB
+      file-size-threshold: 2KB
