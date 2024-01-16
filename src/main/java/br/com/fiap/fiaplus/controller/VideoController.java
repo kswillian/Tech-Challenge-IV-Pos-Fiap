@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -65,6 +66,18 @@ public class VideoController {
         log.info("[VideoController] - listById");
         videoService.deleteById(id);
         return ResponseEntity.status(OK).build();
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<Mono<Video>> upload(@RequestPart("file") FilePart video , @Valid @ModelAttribute(name = "request" ) VideoRequest request) throws InterruptedException {
+        String filePath = videoService.upload(video)
+                .map(filePathVideo -> filePathVideo)
+                .onErrorResume(throwable -> Mono.just(throwable.getMessage()))
+                .block();
+        VideoRequest videoRequest = new VideoRequest(request.title(), request.description(), filePath, request.category());
+        log.info("[VideoController] - create");
+        return ResponseEntity.status(CREATED)
+                .body(videoService.create(videoRequest));
     }
 
 }

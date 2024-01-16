@@ -8,14 +8,19 @@ import br.com.fiap.fiaplus.model.VideoRequest;
 import br.com.fiap.fiaplus.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 import static br.com.fiap.fiaplus.util.Utils.handleNotFound;
@@ -28,6 +33,7 @@ public class VideoServiceImpl implements GenericService<Video, VideoRequest> {
     private final ReactiveMongoTemplate mongoTemplate;
     private final VideoRepository videoRepository;
     private final VideoMapper videoMapper;
+    private final ResourceLoader resourceLoader;
 
     @Override
     public Mono<Video> create(VideoRequest request) {
@@ -74,13 +80,27 @@ public class VideoServiceImpl implements GenericService<Video, VideoRequest> {
     }
 
     // TODO pensar na implementacao
-    public Mono<Video> upload(){
-        return Mono.just(new Video());
+    public Mono<String> upload(FilePart video){
+
+        // Obtenha o nome do arquivo do vídeo
+        String fileName = video.filename();
+
+        // Obtenha o diretório de recursos
+        File resourceDirectory = new File("src/main/resources");
+
+        // Crie o caminho completo do arquivo na pasta "videos" dentro do diretório de recursos
+        String filePath = resourceDirectory.getAbsolutePath() + "/videos/" + fileName;
+        System.out.println("Caminho do arquivo: " + filePath);
+
+        // Salve o vídeo no local especificado
+        return video.transferTo(new File(filePath))
+                .then(Mono.just(filePath));
     }
 
     // TODO pensar na implementacao
     public Flux<Video> streaming(String id){
         return Flux.just(new Video());
     }
+
 
 }
