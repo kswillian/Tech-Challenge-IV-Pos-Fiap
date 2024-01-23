@@ -2,16 +2,19 @@ package br.com.fiap.fiaplus.service;
 
 import br.com.fiap.fiaplus.builder.CriteriaBuilder;
 import br.com.fiap.fiaplus.document.Video;
+import br.com.fiap.fiaplus.document.enums.Category;
 import br.com.fiap.fiaplus.mapper.VideoMapper;
 import br.com.fiap.fiaplus.model.VideoCriteria;
 import br.com.fiap.fiaplus.model.VideoRequest;
 import br.com.fiap.fiaplus.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
@@ -21,19 +24,22 @@ import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static br.com.fiap.fiaplus.util.Utils.handleNotFound;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class VideoServiceImpl implements GenericService<Video, VideoRequest> {
+public class VideoServiceImpl implements VideoService<Video, VideoRequest> {
 
     private final ReactiveMongoTemplate mongoTemplate;
     private final VideoRepository videoRepository;
     private final VideoMapper videoMapper;
     private final ResourceLoader resourceLoader;
+    private static final String FORMAT = "classpath:videos/%s.mp4";
 
     @Override
     public Mono<Video> create(VideoRequest request) {
@@ -59,9 +65,30 @@ public class VideoServiceImpl implements GenericService<Video, VideoRequest> {
     }
 
     @Override
+    public Mono<PageImpl<Video>> listAllByCategory(Pageable pageable, VideoCriteria criteria, Category category) {
+        log.info("[VideoService] - listAllByCategory");
+
+        Query query = new Query()
+                .addCriteria(CriteriaBuilder.buildVideoCriteria(criteria))
+                .addCriteria(Criteria.where("category").is(category))
+                .with(pageable);
+
+        Flux<Video> videos = mongoTemplate.find(query, Video.class);
+
+        return videos.collectList()
+                .map(videoList -> new PageImpl<>(videoList, pageable, videoList.size()));
+    }
+
+    @Override
     public Mono<Video> listById(String id) {
         log.info("[VideoService] - listById");
         return handleNotFound(videoRepository.findById(id), id);
+    }
+
+    @Override
+    public Mono<Video> findByTitle(String title) {
+        log.info("[VideoService] - listByTitle");
+        return handleNotFound(videoRepository.findByTitle(title), title);
     }
 
     @Override
@@ -102,5 +129,8 @@ public class VideoServiceImpl implements GenericService<Video, VideoRequest> {
         return Flux.just(new Video());
     }
 
-
+    public Mono<Resource> getVideo(String title){
+        return Mono.fromSupplier(()->resourceLoader.
+                getResource(String.format(FORMAT,title)))   ;
+    }
 }
