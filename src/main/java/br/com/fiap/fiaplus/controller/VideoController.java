@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -60,6 +61,20 @@ public class VideoController {
 
         return ResponseEntity.status(OK)
                 .body(videoService.listAllByCategory(pageRequest, videoCriteria, category));
+
+    }
+
+    @GetMapping(value = "/listAllByDate/{timestamp}")
+    public ResponseEntity<Mono<PageImpl<Video>>> listAllByDate(
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "DESC") String direction, VideoCriteria videoCriteria,
+            @PathVariable String timestamp){
+
+        log.info("[VideoController] - listAllByDate");
+
+        var pageRequest = PageRequest.of(page, size, Sort.Direction.fromString(direction), "dateRegister");
+        return ResponseEntity.status(OK)
+                .body(videoService.listAllByDate(pageRequest, videoCriteria, timestamp));
 
     }
 
