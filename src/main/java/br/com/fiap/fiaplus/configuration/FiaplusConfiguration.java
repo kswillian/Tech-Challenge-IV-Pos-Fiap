@@ -1,9 +1,6 @@
 package br.com.fiap.fiaplus.configuration;
 
-import br.com.fiap.fiaplus.mapper.UserMapper;
-import br.com.fiap.fiaplus.mapper.UserMapperImpl;
-import br.com.fiap.fiaplus.mapper.VideoMapper;
-import br.com.fiap.fiaplus.mapper.VideoMapperImpl;
+import br.com.fiap.fiaplus.mapper.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,6 +15,10 @@ public class FiaplusConfiguration {
     @Bean
     public UserMapper getUserMapper(){
         return new UserMapperImpl();
+    }
+    @Bean
+    public FavoriteMapper getFavoriteMapper(){
+        return new FavoriteMapperImpl();
     }
 
 }

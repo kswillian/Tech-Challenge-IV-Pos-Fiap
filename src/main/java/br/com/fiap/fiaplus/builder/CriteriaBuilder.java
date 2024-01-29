@@ -1,7 +1,9 @@
 package br.com.fiap.fiaplus.builder;
 
+import br.com.fiap.fiaplus.document.Favorite;
 import br.com.fiap.fiaplus.document.User;
 import br.com.fiap.fiaplus.document.Video;
+import br.com.fiap.fiaplus.model.FavoriteCriteria;
 import br.com.fiap.fiaplus.model.UserCriteria;
 import br.com.fiap.fiaplus.model.VideoCriteria;
 import lombok.experimental.UtilityClass;
@@ -28,6 +30,15 @@ public class CriteriaBuilder {
         return new Criteria().alike(userExample);
     }
 
+    public static Criteria buildFavoriteCriteria(FavoriteCriteria favoriteCriteria) {
+
+        ExampleMatcher matcher = createMatcherFavorite(favoriteCriteria);
+        Example<Favorite> favoriteExample = Example.of(favoriteCriteria.toFavorite(), matcher);
+
+        return new Criteria().alike(favoriteExample);
+    }
+
+
     private static ExampleMatcher createMatcherVideo(VideoCriteria videoCriteria) {
 
         return ExampleMatcher.matchingAll()
@@ -51,6 +62,16 @@ public class CriteriaBuilder {
                         userCriteria.getName() == null ? "name" : "",
                         "id",
                         "name")
+                .withIgnoreCase();
+
+    }
+
+    private static ExampleMatcher createMatcherFavorite(FavoriteCriteria favoriteCriteria) {
+
+        return ExampleMatcher.matchingAll()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
+                .withIgnorePaths(
+                        "id")
                 .withIgnoreCase();
 
     }
