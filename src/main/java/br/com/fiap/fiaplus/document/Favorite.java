@@ -18,10 +18,10 @@ public class Favorite {
     private String id;
 
     @DBRef
-    private User userId;
+    private User user;
 
     @DBRef
-    private Video videoId;
+    private Video video;
 
     private LocalDateTime dateAdded;
 
