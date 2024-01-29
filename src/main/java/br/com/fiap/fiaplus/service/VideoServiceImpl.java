@@ -18,15 +18,13 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
-import java.io.IOException;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 
 import static br.com.fiap.fiaplus.util.Utils.handleNotFound;
 
@@ -71,6 +69,24 @@ public class VideoServiceImpl implements VideoService<Video, VideoRequest> {
         Query query = new Query()
                 .addCriteria(CriteriaBuilder.buildVideoCriteria(criteria))
                 .addCriteria(Criteria.where("category").is(category))
+                .with(pageable);
+
+        Flux<Video> videos = mongoTemplate.find(query, Video.class);
+
+        return videos.collectList()
+                .map(videoList -> new PageImpl<>(videoList, pageable, videoList.size()));
+    }
+
+    @Override
+    public Mono<PageImpl<Video>> listAllByDate(Pageable pageable, VideoCriteria criteria, String timestamp) {
+        log.info("[VideoService] - listAllByDate");
+        LocalDateTime startOfDay = LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(timestamp)), ZoneId.systemDefault()).toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1).minusSeconds(1);
+        System.out.println(startOfDay);
+        System.out.println(endOfDay);
+        Query query = new Query()
+                .addCriteria(CriteriaBuilder.buildVideoCriteria(criteria))
+                .addCriteria(Criteria.where("dateRegister").gte(startOfDay).lte(endOfDay))
                 .with(pageable);
 
         Flux<Video> videos = mongoTemplate.find(query, Video.class);

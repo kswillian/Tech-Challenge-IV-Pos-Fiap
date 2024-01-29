@@ -5,6 +5,7 @@ import br.com.fiap.fiaplus.model.VideoCriteria;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import reactor.core.publisher.Mono;
+
 import java.io.Serializable;
 
 
@@ -19,4 +20,6 @@ public interface VideoService<T, D> extends Serializable {
     Mono<T> findByTitle(final String title);
 
     Mono<PageImpl<T>> listAllByCategory(final Pageable pageable, final VideoCriteria criteria, Category category);
+
+    Mono<PageImpl<T>> listAllByDate(final Pageable pageable, final VideoCriteria criteria, String timestamp);
 }
