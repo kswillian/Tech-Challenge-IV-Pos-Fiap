@@ -40,7 +40,6 @@ Desenvolver uma aplicação de streaming de vídeos com as seguintes funcionalid
 - [Spring WebFlux](https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html)
 - [Lombok](https://projectlombok.org/)
 - [MongoDB](https://www.mongodb.com/)
-- [Docker](https://www.docker.com/)
 - [JUnit](https://junit.org/junit5/)
 - [Mockito](http://mockito.org/)
 
@@ -48,14 +47,12 @@ Desenvolver uma aplicação de streaming de vídeos com as seguintes funcionalid
 
 ### Preparativos
 
-1. Instale o Docker.
-2. Clone este repositório.
+1. Clone este repositório.
 
 ### Configuração e Execução
 
 1. Abra o projeto na sua IDE preferida (ex: IntelliJ IDEA, Eclipse).
-2. Execute o comando `docker-compose up -d` para iniciar o MySQL via Docker.
-3. Execute o projeto (servidor inicia automaticamente).
+2Execute o projeto (servidor inicia automaticamente).
 
 ## Sobre a modelagem
 
